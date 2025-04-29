@@ -2,25 +2,191 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Lung Cancer Risk Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Check Your Lung Cancer Risk</title>
+    <style>
+      :root {
+        --primary: #3498db;
+        --primary-dark: #2980b9;
+        --danger: #e74c3c;
+        --success: #2ecc71;
+        --bg-light: #f9fafb;
+        --text: #2c3e50;
+        --border: #e2e8f0;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-light);
+        color: var(--text);
+        line-height: 1.6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 500px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .header {
+        background: var(--primary);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .form-container {
+        padding: 30px 25px;
+      }
+
+      form {
+        margin-bottom: 20px;
+      }
+
+      /* Form styling */
+      p {
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--text);
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+      }
+
+      select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        padding-right: 40px;
+      }
+
+      button[type="submit"] {
+        display: block;
+        width: 100%;
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        margin-top: 10px;
+      }
+
+      button[type="submit"]:hover {
+        background: var(--primary-dark);
+      }
+
+      /* Prediction result styling */
+      .prediction-result {
+        margin-top: 25px;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .prediction-result h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: var(--text);
+      }
+
+      .high-risk {
+        background-color: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid var(--danger);
+      }
+
+      .low-risk {
+        background-color: rgba(46, 204, 113, 0.1);
+        border-left: 4px solid var(--success);
+      }
+
+      strong {
+        font-weight: 600;
+      }
+
+      /* Help text styling */
+      .helptext {
+        display: block;
+        font-size: 14px;
+        color: #718096;
+        margin-top: 5px;
+      }
+
+      /* Error message styling */
+      .errorlist {
+        list-style: none;
+        color: var(--danger);
+        font-size: 14px;
+        margin-top: 5px;
+        padding-left: 0;
+      }
+    </style>
   </head>
   <body>
-    <h1>Check Your Lung Cancer Risk</h1>
-    <form method="post">
-      {% csrf_token %} {{ form.as_p }}
-      <button type="submit">Predict</button>
-    </form>
+    <div class="container">
+      <div class="header">Check Your Lung Cancer Risk</div>
+      <div class="form-container">
+        <form method="post">
+          {% csrf_token %} {{ form.as_p }}
+          <button type="submit">Predict</button>
+        </form>
 
-    {% if prediction is not None %}
-    <h2>Prediction Result:</h2>
-    {% if prediction == 1 %}
-    <p style="color: red">
-      <strong>High Risk</strong> – Please consult a healthcare professional.
-    </p>
-    {% else %}
-    <p style="color: green">
-      <strong>Low Risk</strong> – No immediate concern detected.
-    </p>
-    {% endif %} {% endif %}
+        {% if prediction is not None %}
+        <div
+          class="prediction-result {% if prediction == 1 %}high-risk{% else %}low-risk{% endif %}"
+        >
+          <h3>Prediction Result:</h3>
+          {% if prediction == 1 %}
+          <strong>High Risk</strong> – Please consult a healthcare professional.
+          {% else %} <strong>Low Risk</strong> – No immediate concern detected.
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
   </body>
 </html>
