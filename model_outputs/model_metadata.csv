@@ -1,0 +1,2 @@
+model_name,model_file,features_file,scaler_file,created_date
+Logistic Regression,model_outputs/models/final_model_logistic_regression.pkl,model_outputs/models/feature_names.pkl,model_outputs/models/scaler.pkl,2025-04-29 18:16:35
