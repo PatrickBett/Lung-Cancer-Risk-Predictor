@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Lung Cancer Risk Prediction</title>
+  </head>
+  <body>
+    <h1>Check Your Lung Cancer Risk</h1>
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction is not None %}
+    <h2>Prediction Result:</h2>
+    {% if prediction == 1 %}
+    <p style="color: red">
+      <strong>High Risk</strong> – Please consult a healthcare professional.
+    </p>
+    {% else %}
+    <p style="color: green">
+      <strong>Low Risk</strong> – No immediate concern detected.
+    </p>
+    {% endif %} {% endif %}
+  </body>
+</html>

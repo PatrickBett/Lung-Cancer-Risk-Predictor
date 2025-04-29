@@ -67,6 +67,15 @@ def preprocess_data(df):
     
     # Keep a copy of the original data
     df_original = df.copy()
+
+
+    # Drop index and patient id columns (case-insensitive match)
+    columns_to_drop = [col for col in df.columns if col.lower() in ['index', 'patient id', 'patientid', 'patient_id']]
+    if columns_to_drop:
+        print(f"\nDropping identifier columns: {columns_to_drop}")
+        df = df.drop(columns=columns_to_drop)
+    else:
+        print("\nNo identifier columns found to drop")
     
     # Check for missing values
     print("\nChecking for missing values:")
@@ -242,9 +251,9 @@ def main():
 
 # Create directories for outputs
 def create_directories():
-    os.makedirs('model_outputs', exist_ok=True)
-    os.makedirs('model_outputs/plots', exist_ok=True)
-    os.makedirs('model_outputs/models', exist_ok=True)
+    os.makedirs('lung_cancer_app/predictor/predictor_model/', exist_ok=True)
+    os.makedirs('lung_cancer_app/predictor/predictor_model/plots', exist_ok=True)
+    os.makedirs('lung_cancer_app/predictor/predictor_model/models', exist_ok=True)
 
 # Load the processed data
 def load_processed_data():
@@ -275,8 +284,8 @@ def split_data(X, y, test_size=0.2):
     X_test_scaled = scaler.transform(X_test)
     
     # Save the scaler for future use
-    joblib.dump(scaler, 'model_outputs/models/scaler.pkl')
-    print("Scaler saved to 'model_outputs/models/scaler.pkl'")
+    joblib.dump(scaler, 'lung_cancer_app/predictor/predictor_model/models/scaler.pkl')
+    print("Scaler saved to 'lung_cancer_app/predictor/predictor_model/models/scaler.pkl'")
     
     return X_train_scaled, X_test_scaled, y_train, y_test
 
@@ -355,7 +364,7 @@ def train_and_evaluate_models(models, X_train, X_test, y_train, y_test):
         plt.ylabel('True Label')
         plt.xlabel('Predicted Label')
         plt.tight_layout()
-        plt.savefig(f'model_outputs/plots/confusion_matrix_{name.replace(" ", "_")}.png')
+        plt.savefig(f'lung_cancer_app/predictor/predictor_model/plots/confusion_matrix_{name.replace(" ", "_")}.png')
         plt.close()
         
         # ROC Curve (if applicable)
@@ -368,7 +377,7 @@ def train_and_evaluate_models(models, X_train, X_test, y_train, y_test):
             plt.ylabel('True Positive Rate')
             plt.title(f'ROC Curve - {name}')
             plt.legend()
-            plt.savefig(f'model_outputs/plots/roc_curve_{name.replace(" ", "_")}.png')
+            plt.savefig(f'lung_cancer_app/predictor/predictor_model/plots/roc_curve_{name.replace(" ", "_")}.png')
             plt.close()
             
             # Update best model if current one is better
@@ -431,8 +440,8 @@ def compare_models(results):
     print(comparison_df)
     
     # Save comparison to CSV
-    comparison_df.to_csv('model_outputs/model_comparison.csv', index=False)
-    print("Model comparison saved to 'model_outputs/model_comparison.csv'")
+    comparison_df.to_csv('lung_cancer_app/predictor/predictor_model/model_comparison.csv', index=False)
+    print("Model comparison saved to 'lung_cancer_app/predictor/predictor_model/model_comparison.csv'")
     
     # Visualize comparison
     plt.figure(figsize=(12, 8))
@@ -442,7 +451,7 @@ def compare_models(results):
     plt.xlabel('Model')
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.savefig('model_outputs/plots/model_comparison.png')
+    plt.savefig('lung_cancer_app/predictor/predictor_model/plots/model_comparison.png')
     plt.close()
     
     # Plot ROC AUC comparison if available
@@ -454,7 +463,7 @@ def compare_models(results):
         plt.xlabel('Model')
         plt.xticks(rotation=45)
         plt.tight_layout()
-        plt.savefig('model_outputs/plots/roc_auc_comparison.png')
+        plt.savefig('lung_cancer_app/predictor/predictor_model/plots/roc_auc_comparison.png')
         plt.close()
     
     return comparison_df
@@ -540,12 +549,12 @@ def fine_tune_best_model(best_model_name, best_model, X_train, X_test, y_train, 
 # Save the final model
 def save_final_model(model, best_model_name, features):
     # Save the model
-    model_filename = f'model_outputs/models/final_model_{best_model_name.replace(" ", "_").lower()}.pkl'
+    model_filename = f'lung_cancer_app/predictor/predictor_model/models/final_model_{best_model_name.replace(" ", "_").lower()}.pkl'
     with open(model_filename, 'wb') as file:
         pickle.dump(model, file)
     
     # Save feature names for future reference
-    feature_filename = 'model_outputs/models/feature_names.pkl'
+    feature_filename = 'lung_cancer_app/predictor/predictor_model/models/feature_names.pkl'
     with open(feature_filename, 'wb') as file:
         pickle.dump(features, file)
     
@@ -557,13 +566,13 @@ def save_final_model(model, best_model_name, features):
         'model_name': best_model_name,
         'model_file': model_filename,
         'features_file': feature_filename,
-        'scaler_file': 'model_outputs/models/scaler.pkl',
+        'scaler_file': 'lung_cancer_app/predictor/predictor_model/models/scaler.pkl',
         'created_date': pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')
     }
     
     metadata_df = pd.DataFrame([metadata])
-    metadata_df.to_csv('model_outputs/model_metadata.csv', index=False)
-    print("Model metadata saved to 'model_outputs/model_metadata.csv'")
+    metadata_df.to_csv('lung_cancer_app/predictor/predictor_model/model_metadata.csv', index=False)
+    print("Model metadata saved to 'lung_cancer_app/predictor/predictor_model/model_metadata.csv'")
 
 # Feature importance analysis
 def analyze_feature_importance(best_model, best_model_name, X, feature_names):
@@ -595,7 +604,7 @@ def analyze_feature_importance(best_model, best_model_name, X, feature_names):
     plt.xlabel('Feature Importance')
     plt.title(f'Feature Importance - {best_model_name}')
     plt.tight_layout()
-    plt.savefig('model_outputs/plots/feature_importance.png')
+    plt.savefig('lung_cancer_app/predictor/predictor_model/plots/feature_importance.png')
     plt.close()
     
     # Save feature importance to CSV
@@ -604,8 +613,8 @@ def analyze_feature_importance(best_model, best_model_name, X, feature_names):
         'Importance': importance
     }).sort_values('Importance', ascending=False)
     
-    importance_df.to_csv('model_outputs/feature_importance.csv', index=False)
-    print("Feature importance saved to 'model_outputs/feature_importance.csv'")
+    importance_df.to_csv('lung_cancer_app/predictor/predictor_model/feature_importance.csv', index=False)
+    print("Feature importance saved to 'lung_cancer_app/predictor/predictor_model/feature_importance.csv'")
 
 # Main execution
 def main():
