@@ -69,13 +69,7 @@ def preprocess_data(df):
     df_original = df.copy()
 
 
-    # Drop index and patient id columns (case-insensitive match)
-    columns_to_drop = [col for col in df.columns if col.lower() in ['index', 'patient id', 'patientid', 'patient_id']]
-    if columns_to_drop:
-        print(f"\nDropping identifier columns: {columns_to_drop}")
-        df = df.drop(columns=columns_to_drop)
-    else:
-        print("\nNo identifier columns found to drop")
+    
     
     # Check for missing values
     print("\nChecking for missing values:")

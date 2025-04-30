@@ -44,7 +44,18 @@ def home(request):
                 int(cleaned['dry_cough']),
                 int(cleaned['snoring']),
             ]
-            prediction = model.predict([input_features])[0]
+            
+            proba = model.predict_proba([input_features])[0]  # Gives array of probabilities for all 3 classes
+            predicted_class = model.predict([input_features])[0]  # Predicted class index (0, 1, or 2)
+            prediction = round(proba[predicted_class] * 100, 2)  # Probability of predicted class in %
+
+            # Map class indices to risk levels
+            class_map = {0: "High", 1: "Low", 2: "Medium"}
+            risk_level = class_map[predicted_class]
+            print(proba)
+            print(predicted_class)
+            print(prediction)
+            print(risk_level)
 
             # Save to DB if using model
             PredictionRecord.objects.create(
@@ -76,4 +87,4 @@ def home(request):
     else:
         form = LungCancerForm()
 
-    return render(request, 'predictor/home.html', {'form': form, 'prediction': prediction})
+    return render(request, 'predictor/home.html', {'form': form, 'prediction': prediction, 'risk_level': risk_level})

@@ -176,14 +176,14 @@
         </form>
 
         {% if prediction is not None %}
-        <div
-          class="prediction-result {% if prediction == 1 %}high-risk{% else %}low-risk{% endif %}"
-        >
+        <div class="prediction-result">
           <h3>Prediction Result:</h3>
-          {% if prediction == 1 %}
+          {% if risk_level == "High" %}
           <strong>High Risk</strong> – Please consult a healthcare professional.
-          {% else %} <strong>Low Risk</strong> – No immediate concern detected.
-          {% endif %}
+          {% elif risk_level == "Medium" %} <strong>Medium Risk</strong> –
+          Consider medical consultation based on symptoms. {% else %}
+          <strong>Low Risk</strong> – No immediate concern detected. {% endif %}
+          <p>Prediction probability: {{ prediction }}%</p>
         </div>
         {% endif %}
       </div>
